@@ -26,13 +26,13 @@
 ## Инструкция по установке и запуску
 
 1. Клонируйте репозиторий
-```bash
-  git clone [https://github.com/ваш_логин/имя_репозитория.git](https://github.com/ваш_логин/имя_репозитория.git)
-  cd имя_репозитория
+```
+  git clone https://github.com/Raketa-123/GrapsPlotter.git
+  cd GrapsPlotter
 ```
 
 2. Создайте и активируйте виртуальное окружение:
-```bash
+```
    python -m venv venv
 ```
  # Для Windows:
@@ -45,17 +45,17 @@
 ```
 
 3. Установите необходимые зависимости:
-```bash
+```
    pip install -r requirements.txt
 ```
 
 4. Выполните миграции базы данных:
-```bash
+```
    python manage.py makemigrations
    python manage.py migrate
 ```
 5. Запустите локальный сервер разработки:
-```bash
+```
    python manage.py runserver
 ```
 
