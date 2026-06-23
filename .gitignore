@@ -1,0 +1,23 @@
+# Виртуальное окружение
+venv/
+.venv/
+env/
+
+# База данных Django
+db.sqlite3
+
+# Файлы кэша Python
+**/__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Загруженные пользователями медиафайлы (графики)
+media/
+
+# Настройки IDE (VS Code, PyCharm)
+.vscode/
+.idea/
+
+# Логи и временные файлы
+*.log

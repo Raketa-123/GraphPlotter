@@ -1,0 +1,426 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Панель управления — GraphPlotter</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            min-height: 100vh;
+            color: #2c3e50;
+            overflow-x: hidden;
+        }
+
+        /* Верхняя панель */
+        .header {
+            background: #ffffff;
+            padding: 15px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+            position: relative;
+            z-index: 10;
+        }
+
+        .logo {
+            font-size: 20px;
+            font-weight: 700;
+            color: #3498db;
+            text-decoration: none;
+        }
+
+        /* Поле поиска в шапке */
+        .search-container {
+            flex: 0 1 400px;
+            margin: 0 20px;
+        }
+
+        .search-box {
+            width: 100%;
+            padding: 10px 16px;
+            border: 2px solid #eaeaea;
+            border-radius: 20px;
+            font-size: 14px;
+            outline: none;
+            transition: 0.3s;
+        }
+
+        .search-box:focus {
+            border-color: #3498db;
+        }
+
+        /* Кнопка гамбургер-меню */
+        .menu-btn {
+            background: none;
+            border: none;
+            cursor: pointer;
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            padding: 5px;
+        }
+
+        .menu-btn span {
+            display: block;
+            width: 28px;
+            height: 3px;
+            background-color: #2c3e50;
+            border-radius: 2px;
+            transition: 0.3s ease;
+        }
+
+        /* Кнопка закрытия внутри шторки (Крестик) */
+        .close-btn {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: none;
+            border: none;
+            cursor: pointer;
+            width: 28px;
+            height: 28px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .close-btn span {
+            display: block;
+            width: 24px;
+            height: 3px;
+            background-color: #2c3e50;
+            border-radius: 2px;
+        }
+        
+        /* Скрещиваем две линии для создания X */
+        .close-btn span:nth-child(1) {
+            transform: rotate(45deg) translateY(2px);
+        }
+        .close-btn span:nth-child(2) {
+            transform: rotate(-45deg) translateY(-2px);
+        }
+
+        /* Выезжающая боковая панель (ШТОРКА) */
+        .sidebar {
+            position: fixed;
+            top: 0;
+            right: -360px; /* Спрятана за экраном */
+            width: 360px;
+            height: 100vh;
+            background: #ffffff;
+            box-shadow: -5px 0 25px rgba(0,0,0,0.1);
+            transition: 0.3s ease;
+            padding: 70px 20px 20px 20px;
+            display: flex;
+            flex-direction: column;
+            z-index: 999;
+        }
+
+        .sidebar.active {
+            right: 0; /* Выезжает наружу */
+        }
+
+        /* Контейнер для скролла истории внутри шторки */
+        .sidebar-history-container {
+            flex: 1;
+            overflow-y: auto;
+            margin-top: 15px;
+            padding-right: 5px;
+        }
+
+        .sidebar-history-container::-webkit-scrollbar {
+            width: 6px;
+        }
+        .sidebar-history-container::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 4px;
+        }
+
+        /* Карточка mini-графика в шторке */
+        .history-mini-item {
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 12px;
+            padding: 12px;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+
+        .history-mini-meta {
+            display: flex;
+            justify-content: space-between;
+            font-size: 12px;
+            color: #64748b;
+            margin-bottom: 8px;
+        }
+
+        .history-mini-title {
+            font-weight: 600;
+            color: #1e293b;
+        }
+
+        .history-mini-img {
+            max-width: 100%;
+            height: auto;
+            border-radius: 6px;
+            border: 1px solid #e2e8f0;
+            background: white;
+        }
+
+        /* Основная рабочая область */
+        .main-content {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: calc(100vh - 70px);
+            padding: 40px 20px;
+        }
+
+        /* Контейнер-сетка для центрирования и расстановки карточек в ряд */
+        .content-wrapper {
+            display: flex;
+            gap: 30px;
+            width: 100%;
+            max-width: 1100px;
+            justify-content: center;
+            align-items: stretch;
+            flex-wrap: wrap; /* Чтобы на мобилках график падал под форму */
+        }
+
+        .card {
+            background: #ffffff;
+            padding: 40px;
+            border-radius: 16px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.05);
+            width: 100%;
+            max-width: 450px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        /* Кастомизация карточки с текущим графиком */
+        .result-card {
+            max-width: 550px;
+            flex: 1;
+            text-align: center;
+        }
+
+        .result-header {
+            text-align: left;
+            margin-bottom: 15px;
+            border-bottom: 2px solid #f1f5f9;
+            padding-bottom: 10px;
+        }
+
+        .result-header h3 {
+            font-size: 13px;
+            color: #64748b;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .result-title {
+            font-size: 22px;
+            font-weight: 700;
+            color: #1e293b;
+        }
+
+        /* Большой главный график */
+        .main-graph-img {
+            width: 100%;
+            height: auto;
+            border-radius: 12px;
+            border: 1px solid #e2e8f0;
+        }
+
+        .card h2 {
+            margin-bottom: 25px;
+            font-size: 24px;
+            text-align: center;
+        }
+
+        .form-group {
+            text-align: left;
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: #34495e;
+            font-size: 14px;
+        }
+
+        .input-func {
+            width: 100%;
+            padding: 14px;
+            border: 2px solid #eaeaea;
+            border-radius: 8px;
+            font-size: 16px;
+            outline: none;
+            transition: 0.3s;
+        }
+
+        .input-func:focus {
+            border-color: #3498db;
+        }
+
+        .btn-submit {
+            width: 100%;
+            padding: 14px;
+            background: #3498db;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+
+        .btn-submit:hover {
+            background: #2980b9;
+        }
+
+        .hint {
+            font-size: 12px;
+            color: #95a5a6;
+            margin-top: 10px;
+            text-align: left;
+            line-height: 1.4;
+        }
+
+        .error {
+            color: #e74c3c;
+            font-size: 14px;
+            margin-bottom: 15px;
+            text-align: left;
+        }
+    </style>
+</head>
+<body>
+
+    <header class="header">
+        <a href="/" class="logo">📈 GraphPlotter</a>
+        
+        <div class="search-container">
+            <form method="GET" action="/">
+                <input type="text" name="q" class="search-box" value="{{ search_query|default:'' }}" placeholder="Поиск в истории...">
+            </form>
+        </div>
+
+        <button class="menu-btn" onclick="openMenu()">
+            <span></span>
+            <span></span>
+            <span></span>
+        </button>
+    </header>
+
+    <div class="sidebar" id="sidebar">
+        <button class="close-btn" onclick="closeMenu()">
+            <span></span>
+            <span></span>
+        </button>
+
+        <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #e2e8f0; padding-bottom: 12px; padding-right: 35px;">
+            <span style="font-size: 12px; color: #64748b; max-width: 160px; overflow: hidden; text-overflow: ellipsis;">{{ request.user.email }}</span>
+            <a href="/logout/" style="color: #e74c3c; font-size: 14px; font-weight: 600; text-decoration: none;">Выйти</a>
+        </div>
+        
+        <h3 style="margin-top: 20px; font-size: 18px; color: #1e293b;">
+            {% if search_query %} Найдено: {% else %} История графиков: {% endif %}
+        </h3>
+
+        <div class="sidebar-history-container">
+            {% for item in history %}
+                <div class="history-mini-item">
+                    <div class="history-mini-meta">
+                        <span class="history-mini-title">{{ item.title }}</span>
+                        <span>{{ item.created_at|date:"d.M H:i" }}</span>
+                    </div>
+                    {% if item.graph_image %}
+                        <img src="{{ item.graph_image.url }}" alt="{{ item.title }}" class="history-mini-img">
+                    {% else %}
+                        <div style="font-size: 12px; color: #e74c3c;">Ошибка картинки</div>
+                    {% endif %}
+                </div>
+            {% empty %}
+                <div style="text-align: center; color: #94a3b8; font-size: 14px; padding-top: 40px;">
+                    {% if search_query %}Ничего не найдено.{% else %}История пуста.{% endif %}
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+
+    <main class="main-content">
+        <div class="content-wrapper">
+            
+            <div class="card">
+                <h2>Построить новый график</h2>
+                
+                {% if error %}
+                    <div class="error">⚠️ {{ error }}</div>
+                {% endif %}
+
+                <form method="POST" action="{% url 'home_page' %}">
+                    {% csrf_token %}
+                    <div class="form-group">
+                        <label for="function_str">Введите математическую функцию</label>
+                        <input type="text" id="function_str" name="function_str" class="input-func" placeholder="Например: 4 / x" required>
+                        <div class="hint">
+                            * Степень: <b>**</b> (x**2)<br>
+                            * Функции: <b>sin(x)</b>, <b>cos(x)</b>, <b>tan(x)</b>
+                        </div>
+                    </div>
+                    <button type="submit" class="btn-submit">Визуализировать</button>
+                </form>
+            </div>
+
+            {% if latest_graph %}
+                <div class="card result-card">
+                    <div class="result-header">
+                        <h3>Текущий график</h3>
+                        <span class="result-title">{{ latest_graph.title }}</span>
+                    </div>
+                    {% if latest_graph.graph_image %}
+                        <img src="{{ latest_graph.graph_image.url }}" alt="{{ latest_graph.title }}" class="main-graph-img">
+                    {% else %}
+                        <div class="error">⚠️ Ошибка отображения изображения.</div>
+                    {% endif %}
+                </div>
+            {% endif %}
+
+        </div>
+    </main>
+
+    <script>
+        function openMenu() {
+            document.getElementById('sidebar').classList.add('active');
+        }
+
+        function closeMenu() {
+            document.getElementById('sidebar').classList.remove('active');
+        }
+
+        // Авто-раскрытие шторки при поиске
+        window.addEventListener('DOMContentLoaded', () => {
+            const urlParams = new URLSearchParams(window.location.search);
+            if (urlParams.has('q') && urlParams.get('q').trim() !== '') {
+                openMenu();
+            }
+        });
+    </script>
+</body>
+</html>

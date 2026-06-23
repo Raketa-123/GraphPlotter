@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GraphPlotter — Визуализация Функций</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            color: #2c3e50;
+        }
+
+        /* Навигация */
+        .navbar {
+            background: #ffffff;
+            padding: 15px 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+        }
+
+        .logo {
+            font-size: 22px;
+            font-weight: 700;
+            color: #3498db;
+            text-decoration: none;
+        }
+
+        .nav-buttons {
+            display: flex;
+            gap: 15px;
+        }
+
+        .btn-nav {
+            padding: 10px 20px;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+
+        .btn-login {
+            color: #3498db;
+            border: 2px solid #3498db;
+        }
+
+        .btn-login:hover {
+            background: rgba(52, 152, 219, 0.05);
+        }
+
+        .btn-register {
+            background: #3498db;
+            color: #ffffff;
+            border: 2px solid #3498db;
+        }
+
+        .btn-register:hover {
+            background: #2980b9;
+            border-color: #2980b9;
+        }
+
+        /* Главный блок лендинга */
+        .hero {
+            flex: 1;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 40px;
+        }
+
+        .hero-card {
+            background: #ffffff;
+            padding: 50px 40px;
+            border-radius: 16px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05);
+            max-width: 600px;
+            text-align: center;
+        }
+
+        .hero-card h1 {
+            font-size: 36px;
+            color: #2c3e50;
+            margin-bottom: 20px;
+            line-height: 1.2;
+        }
+
+        .hero-card p {
+            font-size: 16px;
+            color: #7f8c8d;
+            line-height: 1.6;
+            margin-bottom: 35px;
+        }
+
+        .btn-main {
+            display: inline-block;
+            padding: 16px 32px;
+            background: #3498db;
+            color: white;
+            font-size: 18px;
+            font-weight: 600;
+            text-decoration: none;
+            border-radius: 8px;
+            box-shadow: 0 4px 15px rgba(52, 152, 219, 0.3);
+            transition: all 0.3s ease;
+        }
+
+        .btn-main:hover {
+            background: #2980b9;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(52, 152, 219, 0.4);
+        }
+    </style>
+</head>
+<body>
+
+    <nav class="navbar">
+        <a href="/" class="logo">📈 GraphPlotter</a>
+        <div class="nav-buttons">
+            <a href="/login/" class="btn-nav btn-login">Войти</a>
+            <a href="/register/" class="btn-nav btn-register">Регистрация</a>
+        </div>
+    </nav>
+
+    <main class="hero">
+        <div class="hero-card">
+            <h1>Стройте математические графики в один клик</h1>
+            <p>
+                Добро пожаловать в GraphPlotter! Наш сервис позволяет мгновенно визуализировать любые математические функции. Просто введите выражение, а умный алгоритм построит точный координатный график с автоматической обработкой разрывов. Все ваши графики сохраняются в личную историю!
+            </p>
+            <a href="/register/" class="btn-main">Начать бесплатно</a>
+        </div>
+    </main>
+
+</body>
+</html>
